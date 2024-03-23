@@ -4,7 +4,7 @@ on:
 env: 
   AWS_REGION: us-east-2 
   ECR_REPOSITORY: vprofileapp 
-  EKS_CLUSTER: kitops-eks 
+  EKS_CLUSTER: vprofile-eks 
 jobs: 
   Testing: 
     runs-on: ubuntu-latest 
@@ -26,7 +26,8 @@ jobs:
         uses: warchant/setup-sonar-scanner@v7 
       # Run sonar-scanner 
       - name: SonarQube Scan 
-        run: sonar-scanner \
+        run: |
+          sonar-scanner \
           -Dsonar.host.url=${{ secrets.SONAR_URL }} \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
@@ -35,13 +36,13 @@ jobs:
           -Dsonar.junit.reportsPath=target/surefire-reports/ \
           -Dsonar.jacoco.reportsPath=target/jacoco.exec \
           -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
-          -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ 
+          -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/
       # Check the Quality Gate status. 
       - name: SonarQube Quality Gate check 
         id: sonarqube-quality-gate-check 
         uses: sonarsource/sonarqube-quality-gate-action@master 
+        env: 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }} #OPTIONAL
       # Force to fail step after specific time. 
       timeout-minutes: 5 
-    env: 
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
-      SONAR_HOST_URL: ${{ secrets.SONAR_URL }} #OPTIONAL
