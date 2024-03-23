@@ -81,6 +81,8 @@ jobs:
         run: "aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name kitops-eks " 
       - name: "Print config file" 
         run: "cat ~/.kube/config"
+      - name: delete existing regcred
+        run: "kubectl delete regcred"
       - name: "Login to ECR" 
         run: "kubectl create secret docker-registry newregcred --docker-server=${{ secrets.REGISTRY }} --docker-username=AWS --docker-password=$(aws ecr get-login-password)" 
       - name: "Deploy Helm" 
